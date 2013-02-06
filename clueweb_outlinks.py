@@ -4,21 +4,34 @@ Gathers a list of outlinks from Clueweb12
 
 #!/usr/bin/env python
 
+import chardet
 import os
 import sys
 import warc
 
+from BeautifulSoup import BeautifulSoup, SoupStrainer
 
-CLUEWEB_DATASET_PATH = '/Users/shriphani/Documents'
-CLUEWEB_DISK = None
 
-CLUEWEB_DISK_DATA_DIRS_PATTERN = r'ClueWeb12_[0-9][0-9]' #each clueweb disk hands data off in this fashion
-CLUEWEB_DISK_WEB_CRAWLS_PATTERN = r'[0-9][0-9][0-9][0-9]wb' #web crawls contain wb
+def handle_warc_file(warc_file):
+	f = warc.open(warc_file)
 
-def main():
-	"""
-	Runs the disk job
-	"""
+	for warc_record in f:
+		handle_warc_record(warc_record)
+
+def handle_warc_record(record):
+	s = record.payload.read()
+
+	for link in BeautifulSoup(s, SoupStrainer('a')):
+		if link.has_key('href'):
+			s = link['href']
+
+			try:
+				print s
+
+			except UnicodeEncodeError:
+				continue # should have used chardet but it failed with a weak check.
+
+		sys.stdout.flush()
 	
 
 if __name__ == '__main__':
@@ -27,6 +40,16 @@ if __name__ == '__main__':
 		print "Usage: python clueweb_outlinks.py <diskno.>"
 		sys.exit(1)
 
-	CLUEWEB_DISK = sys.argv[1]
-	for root, dirs, files in os.walk(os.path.join(CLUEWEB_DATASET_PATH, CLUEWEB_DISK)):
-		print root, dirs, files
+	clueweb_disk = sys.argv[1]
+	clueweb_output_file = sys.argv[2]
+	sys.stdout = open(clueweb_output_file, 'w')
+	for root, dirs, files in os.walk(clueweb_disk):
+		warc_files = filter(
+			lambda s: s.find('warc.gz') >= 0,
+			files
+		)
+
+		for warc_file in warc_files:
+			warc_file_path = os.path.join(root, warc_file)
+
+			handle_warc_file(warc_file_path)

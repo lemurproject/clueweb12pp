@@ -1,0 +1,6 @@
+Universe        = vanilla
+Executable      = disk2.sh 
+Log             = disk2.log
+Output          = disk2.out
+Error           = disk2.err
+Queue

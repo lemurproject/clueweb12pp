@@ -1,0 +1,6 @@
+Universe        = vanilla
+Executable      = disk3.sh 
+Log             = disk3.log
+Output          = disk3.out
+Error           = disk3.err
+Queue

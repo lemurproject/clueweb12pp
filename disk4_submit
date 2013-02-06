@@ -1,0 +1,6 @@
+Universe        = vanilla
+Executable      = disk4.sh 
+Log             = disk4.log
+Output          = disk4.out
+Error           = disk4.err
+Queue
