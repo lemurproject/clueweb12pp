@@ -23,14 +23,7 @@ def handle_warc_record(record):
 
 	for link in BeautifulSoup(s, SoupStrainer('a')):
 		if link.has_key('href'):
-			s = link['href']
-
-			try:
-				print s
-
-			except UnicodeEncodeError:
-				continue # should have used chardet but it failed with a weak check.
-
+			print link['href']
 		sys.stdout.flush()
 	
 
@@ -42,7 +35,14 @@ if __name__ == '__main__':
 
 	clueweb_disk = sys.argv[1]
 	clueweb_output_file = sys.argv[2]
+
+	# a very brittle solution to the encoding problems on
+	# clueweb12 data
+	reload(sys)
+	sys.setdefaultencoding('utf-8')
+
 	sys.stdout = open(clueweb_output_file, 'w')
+
 	for root, dirs, files in os.walk(clueweb_disk):
 		warc_files = filter(
 			lambda s: s.find('warc.gz') >= 0,
@@ -53,3 +53,4 @@ if __name__ == '__main__':
 			warc_file_path = os.path.join(root, warc_file)
 
 			handle_warc_file(warc_file_path)
+
