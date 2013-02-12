@@ -73,6 +73,9 @@ if __name__ == '__main__':
 	if parsed.num_procs:
 		PROCS_POOL_SIZE = parsed.num_procs
 
+	reload(sys)
+	sys.setdefaultencoding('utf-8')
+
 	jobs_handlers_pool = multiprocessing.Pool(PROCS_POOL_SIZE)
 
 	for root, dirs, files in os.walk(parsed.job_directory):
