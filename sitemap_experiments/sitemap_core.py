@@ -36,8 +36,7 @@ def handle_warc_file(warc_file_name):
 	w = warc.open(warc_file_name)
 
 	for record in w:
-		if record.header.has_key('WARC-Target-URI'):
-
+		try:
 			record_url_parsed = urlparse.urlparse(record['WARC-Target-URI'])
 
 			host = record_url_parsed.hostname
@@ -47,6 +46,8 @@ def handle_warc_file(warc_file_name):
 
 			for query in queries:
 				print host, query # one line per host and query combination
+		except:
+			sys.stderr.write('fuck_up')
 	print warc_file_name
 
 
